@@ -1,0 +1,40 @@
+12.
+a, Lớp nào nên triển khai interface Comparable?
+Lớp cần triển khai interface Comparable là lớp Media (hoặc các lớp con của nó như DigitalVideoDisc, Book, CompactDisc)
+Bởi vì, khi sử dụng Comparable, chúng ta muốn các đối tượng Media có thể so sánh và sắp xếp với nhau. Do đó, chúng ta cần triển khai phương thức CompareTo() trong lớp Media, hoặc các lớp con của nó, để xác định cách so sánh các đối tượng media
+
+
+b, Trong những lớp đó, nên triển khai phương thức compareTo() như thế nào để phản ánh thứ tự mà chúng ta muốn?
+Phương thức compareTo() trong interface Comparable được sử dụng để xác định thứ tự sắp xếp giữa hai đối tượng của lớp. Cần phải so sánh các thuộc tính của đối tượng này với đối tượng khác, và trả về:
+	- 0 nếu hai đối tượng bằng nhau
+	- một số âm nếu đối tượng hiện tại nhỏ hơn đối tượng so sánh
+	- một số dương nếu đối tượng hiện tại lớn hơn đối tượng so sánh
+Để thực hiện việc sắp xếp theo các tiêu chí như "tiêu đề trước rồi đến chi phí" hoặc "chi phí trước rồi đến tiêu đề", cần viết phương thức compareTo() sao cho:
+Vd1: So sánh theo tiêu đề rồi đến chi phí (Title -> Cost)
+@Override
+public int compareTo(Media other) {
+    // So sánh theo title
+    int titleComparison = this.getTitle().compareTo(other.getTitle());  
+    // Nếu title giống nhau, so sánh theo cost
+    if (titleComparison == 0) {
+        return Float.compare(this.getCost(), other.getCost());
+    } 
+    return titleComparison;
+}
+Vd2: So sánh theo chi phí rồi đến tiêu đề (Cost -> Title)
+@Override
+public int compareTo(Media other) {
+    // So sánh theo cost (giảm dần)
+    int costComparison = Float.compare(other.getCost(), this.getCost());
+    // Nếu cost giống nhau, so sánh theo title
+    if (costComparison == 0) {
+        return this.getTitle().compareTo(other.getTitle());
+    }
+    return costComparison;
+}
+
+c, Chúng ta có thể có hai quy tắc sắp xếp cho đối tượng không (theo tiêu đề rồi đến chi phí và theo chi phí rồi đến tiêu đề) nếu sử dụng interface Comparable không?
+Không thể có hai quy tắc sắp xếp khác nhau trong một lần triển khai của Comparable. Lý do là khi triển khai Comparable và override phương thức compareTo(), ta chỉ có thể xác định một cách duy nhất để so sánh các đối tượng của lớp đó.
+Nếu cần hai quy tắc sắp xếp khấc nhau (ví dụ: "theo tiêu đề rồi đến chi phí" và "theo chi phí rồi đến tiêu đề), ta sẽ phải sử dụng Comparator thay vì Comparable. Comparator cho phép định nghĩa nhiều quy tắc sắp xếp khác nhau cho các trường hợp sử dụng khác nhau, và ta có thể áp dụng quy tắc sắp xếp này vào cùng một class mà không thay đổi mã nguồn của class đó.
+
+
